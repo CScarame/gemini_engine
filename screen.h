@@ -1,5 +1,5 @@
-#ifndef GEMINI_SCREEN_H
-#define GEMINI_SCREEN_H
+#ifndef SCREEN_H
+#define SCREEN_H
 
 #include <stdio.h>    // printf
 #include <stdlib.h>   // malloc
@@ -24,6 +24,18 @@ void clear_screen(int c);
 void draw();
 
 // Starts the screen. Call this first.
+// Init may attempt to use the values in
+//  width, height, bpp to set the values of
+//  of the screen. It may just go to default
+//  values. The final values are returned in
+//  int these variables.
+//
+// Returns 0 for successful initialization
+//  and a positive number for an error.
 int init(int* width, int* height, char* bpp);
+
+// Closes the screen and cleans up after it.
+// Call this last. Returns 0 for success.
+int cleanup();
 
 #endif

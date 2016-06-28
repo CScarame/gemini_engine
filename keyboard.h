@@ -12,7 +12,7 @@
 
 // A list of all key inputs. These are
 //  used to make flags for the keys int
-enum KEYFLAGS {
+enum KEYFLAG {
   K_UP    = 0x000;
   K_LEFT  = 0x001;
   K_DOWN  = 0x002;
@@ -31,7 +31,11 @@ enum KEYFLAGS {
 //  which keys are down.
 int get_keys();
 
-// Update keyflags
+// Refresh keyflags
 void tick();
+
+// Change a key mapping. The next key to be pressed
+//  becomes mapped to that flag.
+void remap(KEYFLAG kf);
 
 #endif

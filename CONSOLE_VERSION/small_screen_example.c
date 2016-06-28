@@ -1,3 +1,6 @@
+// Example file showing the setup for the small screen.
+// Needs more work
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
