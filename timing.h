@@ -5,8 +5,13 @@
 #include <time.h>
 
 
-// Get an amount of nanoseconds representing the
-// current time
-void get_time(long long* ts);
+// Get current time in sec and nanoseconds
+void get_time(long* sec, long *nsec);
+
+// Set the marker for the time passed
+void set_mark(long sec, long nsec);
+
+// Return the time passed since mark in nanoseconds
+long get_mark(void);
 
 #endif
