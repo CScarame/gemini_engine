@@ -3,6 +3,10 @@
 #ifndef _KEYBOARD_H
 #define _KEYBOARD_H
 
+#ifndef DEBUG
+#define DEBUG 0
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
