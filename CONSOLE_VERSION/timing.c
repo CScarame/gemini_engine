@@ -1,10 +1,11 @@
 // TODO: solve for when clock loops
+// Solve for negative mark
 
 #include "timing.h"
 
 #include <stdio.h>
 
-const long BIL = 1000000000;
+const long NANOS_PER_SEC = 1000000000;
 
 struct timespec ct;
 struct timespec mt;
@@ -31,10 +32,10 @@ long mark(void)
 
   while(d_nano < 0){
     d_sec++;
-    d_nano = d_nano - BIL;
+    d_nano = d_nano - NANOS_PER_SEC;
   }
 
-  long tot_nano = d_sec*BIL + d_nano;
+  long tot_nano = d_sec*NANOS_PER_SEC + d_nano;
   return tot_nano;
 }
 
@@ -43,17 +44,11 @@ int main(){
   long n;
   get_time(&s,&n);
   set_mark(s,n);
-  printf("%d\n",mark());
-  printf("%d\n",mark());
-  printf("%d\n",mark());
   int i;
-  for(i = 0; i < 100; i++){
-    if(!(i%10)){
-      printf("%d\n",mark());
-    }
-    int j = 0, k = 0;
-    while(j < 100000){
-      j++;
-    }
+  for(i = 0; i < 10; i++){
+    while(mark() < NANOS_PER_SEC);
+    printf("%d\n",mark());
+    set_mark(s++,n);
+
   }
 }

@@ -21,8 +21,8 @@ enum KEYFLAG {
   K_STANCE= 0x010;
   K_A     = 0x020;
   K_B     = 0x040;
-  K_C     = 0x080;
-  K_D     = 0x100;
+  K_X     = 0x080;
+  K_Y     = 0x100;
   K_ESC   = 0x200;
   K_ENTER = 0x400;
 };
