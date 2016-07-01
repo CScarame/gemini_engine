@@ -71,6 +71,10 @@ int get_keys(){
   return keys;
 }
 
+char test_key(keyflag_t k){
+  char result = (keys & (1<<k))?1:0;
+}
+
 void init()
 {
 
@@ -115,7 +119,7 @@ int main() // For Testing only
   init();
   keys = 0;
   int i;
-  while(!(keys & (1<<k_esc))){
+  while(!(test_key(k_esc))){
     tick();
     printf("%x\n",keys);
     //sleep(1);

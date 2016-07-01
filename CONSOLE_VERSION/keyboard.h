@@ -16,7 +16,7 @@
 #include <linux/kd.h>
 #include <linux/keyboard.h>
 
-enum KEYFLAG
+typedef enum
 {
   k_up,
   k_left,
@@ -31,13 +31,15 @@ enum KEYFLAG
   k_enter,
   k_esc,
   num_keys
-};
+} keyflag_t;
 
 void tick();
 
 void update_keys(short keycode, char down);
 
 int get_keys();
+
+char check_key(keyflag_t k);
 
 void init();
 
