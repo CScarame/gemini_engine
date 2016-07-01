@@ -1,41 +1,60 @@
-// Keys can be adjusted. Once the keyflags are read,
-//    UP = KEYFLAGS | K_UP
-//    This is zero if the up key isn't pressed
-//    This is non-zero if up key is pressed
+// Header file specifically for console/small_screen
 
-#ifndef KEYBOARD_H
-#define KEYBOARD_H
+#ifndef _KEYBOARD_H
+#define _KEYBOARD_H
 
-#include <stdio.h>    // printf
-#include <stdlib.h>   // malloc
-#include <linux/kd.h> // Keyboard
+#ifndef DEBUG
+#define DEBUG 0
+#endif
 
-// A list of all key inputs. These are
-//  used to make flags for the keys int
-enum KEYFLAG {
-  K_UP    = 0x000;
-  K_LEFT  = 0x001;
-  K_DOWN  = 0x002;
-  K_RIGHT = 0x004;
-  K_JUMP  = 0x008;
-  K_STANCE= 0x010;
-  K_A     = 0x020;
-  K_B     = 0x040;
-  K_X     = 0x080;
-  K_Y     = 0x100;
-  K_ESC   = 0x200;
-  K_ENTER = 0x400;
-};
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <termios.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/kd.h>
+#include <linux/keyboard.h>
 
-// Function to return the flags for
-//  which keys are down.
-int get_keys();
+// Enum for key inputs
+typedef enum
+{
+  k_up,
+  k_left,
+  k_down,
+  k_right,
+  k_jump,
+  k_stance,
+  k_a,
+  k_b,
+  k_x,
+  k_y,
+  k_enter,
+  k_esc,
+  num_keys
+} keyflag_t;
 
-// Refresh keyflags
+// Read key presses from the buffer and update keys
 void tick();
 
-// Change a key mapping. The next key to be pressed
-//  becomes mapped to that flag.
-void remap(KEYFLAG kf);
+// Updates keys variable
+void update_keys(short keycode, char down);
 
-#endif
+// Return value has a bit for each key above, 1 is down, 0 up
+// LSB is k_up.
+int get_keys();
+
+// Returns 1 if k is down
+char check_key(keyflag_t k);
+
+// Called to begin keyboard input.
+// Enables medium raw input (keycodes)
+// Disables console input.
+// Non-canonical inputs (No enter is needed, every press sends a code
+// Disables repeat
+void init();
+
+// Returns keyboard to former settings 
+void cleanup();
+
+#endif // _KEYBOARD_H
