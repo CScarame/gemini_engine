@@ -16,6 +16,29 @@
 #include <linux/kd.h>
 #include <linux/keyboard.h>
 
+enum KEYFLAG
+{
+  k_up,
+  k_left,
+  k_down,
+  k_right,
+  k_rump,
+  k_stance,
+  k_a,
+  k_b,
+  k_x,
+  k_y,
+  k_enter,
+  k_esc,
+  num_keys
+};
+
+void tick();
+
+void update_keys(short keycode, char down);
+
+int get_keys();
+
 void init();
 
 void cleanup();
