@@ -34,11 +34,11 @@ typedef enum
   num_keys
 } keyflag_t;
 
-// Read key presses from the buffer and update keys
-void tick();
-
 // Updates keys variable. Down is a boolean.
 void update_keys(short keycode, char down);
+
+// Read key presses from the buffer and update keys
+void tick();
 
 // Return value has a bit for each key above, 1 is down, 0 up
 // LSB is k_up.
