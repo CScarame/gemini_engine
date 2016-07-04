@@ -2,6 +2,7 @@
 #ifndef _TIMING_H
 #define _TIMING_H
 
+#include <stdio.h>
 #include <time.h>
 
 

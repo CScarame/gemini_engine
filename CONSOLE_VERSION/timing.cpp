@@ -37,16 +37,12 @@ long mark(void)
   return tot_nano;
 }
 
+int set_update(void(*update)()) {
+  
+
 int main(){
   long s;
   long n;
   get_time(&s,&n);
   set_mark(s,n);
-  int i;
-  for(i = 0; i < 10; i++){
-    while(mark() < NANOS_PER_SEC);
-    printf("%d\n",mark());
-    set_mark(s++,n);
-
-  }
 }
