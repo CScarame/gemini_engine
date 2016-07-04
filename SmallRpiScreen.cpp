@@ -1,0 +1,143 @@
+#include "SmallRpiScreen.h"
+
+SmallRpiScreen::SmallRpiScreen()
+{
+	int w, h, bpp;
+	SmallRpiScreen(&w, &h, &bpp);
+}
+
+
+
+SmallRpiScreen::SmallRpiScreen(int *w, int *h, int *bpp)
+{
+	FRAMEBUFFER = "/dev/fb1";
+	CONSOLE = "/dev/tty1";
+
+	debug("Starting SmallRpiScreen init");
+
+	// Open framebuffer device file
+	fbfd = open(FRAMEBUFFER, O_RDWR);
+	if (fbfd == -1) debug("Error: cannot open framebuffer device.");
+
+	debug("Framebuffer device opened");
+
+	// Open console and hide cursor (Do this in keyboard???)
+	kbfd = open(CONSOLE, O_WRONLY);
+	if (kbfd >= 0) {
+		iotcl(kbfd, KDSETMODE, KD_GRAPHICS);
+	}
+	else debug("Could not open console to disable cursor.");
+
+	debug("Diabled cursor blink.");
+
+	// Get orig variable screen info
+	if (ioctl(fbfd, FBIOGET_VSCREENINFO, &vinfo))
+		debug("Error reading orig vinfo");
+
+	if(DEBUG >= 1) printf("Original info: %dx%d, %dbpp\n",
+		                  vinfo.xres, vinfo.yres, vinfo.bpp);
+
+	// Store orig vinfo
+	memcpy(&orig_vinfo, &vinfo, sizeof(struct fb_var_screeninfo));
+
+	//Change vinfo (not in this implementation... but we can try)
+	vinfo.xres = *w;
+	vinfo.yres = *h;
+	vinfo.bits_per_pixel = *bpp;
+	vinfo.xres_virtual = *w;
+	vinfo.yres_virtual = *h * PAGES;
+
+	// Set vinfo
+	if (ioctl(fbfd, FBIOPUT_VSCREENINFO, &vinfo))
+		debug("Error setting vinfo");
+
+	if(DEBUG >= 1) printf("New info: %dx%d, %dbpp\n          %dx%d virtual\n",
+		                  vinfo.xres, vinfo.yres, vinfo.bpp,
+		                  vinfo.xres_virtual, vinfo.yres_virtual);
+
+	// Get fix screen info
+	if (ioctl(fbfd, FBIOGET_FSCREENINFO, &finfo))
+		debug("Error reading finfo");
+	
+	if (DEBUG >= 1) printf("Fixed info: %d smem_len, %d line_length\n",
+		                   finfo.smem_len, finfo.line_length);
+
+	// Map framebuffer to user memory
+	len_fb = finfo.smem_len;
+
+	fbp = (char*) mmap(0, len_fb,
+				  PROT_READ | PROT_WRITE,
+				  MAP_SHARED,
+				  fbfd, 0);
+	if ((int)fbp == -1) debug("Failed to map a pointer to fb");
+
+	fbpage = (char*)malloc(len_fb_mem*PAGES);
+
+	if ((int)fbpages == -1) debug("Failed to allocate pages");
+
+	*w = vinfo.xres;
+	*h = vinfo.yres;
+	*bpp = vinfo.bits_per_pixel;
+
+	debug("Finished init");
+
+SmallRpiScreen::~SmallRpiScreen()
+{
+	debug("Starting SmallRpiScreen cleanup");
+
+	// Unmap framebuffer
+	munmap(fbp, len_fb);
+
+	// Restore orig screen
+	if (ioctl(fbfd, FBIOPUT_VSCREENINFO, &orig_vinfo))
+		debug("Error restoring orig screen info");
+	
+	debug("Restored orig screen");
+
+	// Unmap pages (sm screen specific)
+	munmap(fbpage, PAGES*len_fb);
+
+	// Restore cursor blink; close keyboard
+	if (kbfd >= 0) {
+		ioctl(kbfd, KDSETMODE, KD_TEXT);
+		close(kbfd);
+		debug("Restored orig keyboard");
+	}
+
+	// Close framebuffer
+	close(fbfd);
+	debug("Closed framebuffer device");
+
+	debug("Finished cleanup");
+}
+
+void SmallRpiScreen::draw_pixel(int x, int y, int c)
+{
+	debug("Drawing pixel", 3);
+
+	// Calculate pixel's offset inside the buffer
+	unsigned int pix_offset = (x * vinfo.bits_per_pixel / 8) + 
+		                       y * finfo.line_length;
+
+	//Do page calc (not in this implementation)
+
+	// Similar to fbpage[pix_offset] = c 
+	//(Normally would use fbp and page offset)
+	*((short*)(fbpage + pix_offset + (page * len_fb))) = c;
+}
+
+void SmallRpiScreen::clear_screen(int c)
+{
+	debug("Clearing Screen", 2);
+
+	memset(fbpage + (page * len_fb), c, len_fb);
+}
+
+void SmallRpiScreen::switch_page()
+{
+	debug("Switching page", 2);
+
+	// Naive implementation because we don't have virtual fbp space
+	memcpy(fbp, fbpage + (page * len_fb), len_fb);
+	page = (page + 1) % PAGES;
+}
