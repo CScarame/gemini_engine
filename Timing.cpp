@@ -53,12 +53,15 @@ int Timing::run(void(*u)(), void(*r)())
 		num_frames++;
 		// Optionally, check how much time remains and sleep
 	}
+	// Add try except for above loop?
+	debug("Ended Timer Loop");
 
 	return q; // Return reason for quitting
 }
 
 void Timing::setTPS(int set_tps)
 {
+	debug("Setting TPS");
 	tps = set_tps;
 }
 
@@ -69,17 +72,20 @@ int Timing::getTPS()
 
 void Timing::get_time(struct timespec *t)
 {
+	debug("Getting current time",3);
 	clock_gettime(CLOCK_MONOTONIC, t);
 }
 
 void Timing::set_mark(struct timespec t)
 {
+	debug("Setting mark",3);
 	mt.tv_sec = t.tv_sec;
 	mt.tv_nsec = t.tv_nsec;
 }
 
 void Timing::add_mark(long nano)
 {
+	debug("Increasing mark",3);
 	long tmp = mt.tv_nsec + nano;
 	mt.tv_sec += tmp / NANOS_PER_SEC;
 	mt.tv_nsec = tmp % NANOS_PER_SEC;
@@ -87,6 +93,7 @@ void Timing::add_mark(long nano)
 
 long long Timing::mark(string opt = "nano")
 {
+	debug("Getting time since mark",3);
 	struct timespec dt;
 
 	get_time(&ct);
@@ -95,6 +102,7 @@ long long Timing::mark(string opt = "nano")
 	dt.tv_nsec = ct.tv_nsec - mt.tv_nsec;
 
 	if (dt.tv_sec < 0) { // Edge case, just reset and try again
+		debug("Got negative time when checking mark, could clock have looped?");
 		set_mark(ct);
 		return 0;
 	}
@@ -119,5 +127,6 @@ long long Timing::mark(string opt = "nano")
 
 void Timing::quit(char reason = 1)
 {
+	debug("Timer told to quit");
 	q = reason;
 }
