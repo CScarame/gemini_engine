@@ -1,14 +1,17 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
+#include <string>
 
-#define DEBUG 0
+#define DEBUG 2
 
-void debug(char* msg, int lvl=1)
+using namespace std;
+
+void debug(string msg, int lvl=1)
 {
-	if (DEBUG >= lvl) puts(msg);
+	if (DEBUG >= lvl) cout << msg << endl;
 }
 
 #endif

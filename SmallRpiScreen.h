@@ -8,9 +8,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <fcntl.h>
 
-#include <unistd.h>
 #include <sys/ioctl.h>
 #include <linux/fb.h>
 #include <linux/kd.h>
@@ -20,21 +20,22 @@ class SmallRpiScreen : Screen
 {
 	const char* FRAMEBUFFER;
 	const char* CONSOLE;
-	const int PAGES = 1;
 
-	int fbfd = 0; // Framebuffer file descriptor
-	int kbfd = 0; // Keyboard file descriptor
+        int PAGES;
+
+	int fbfd; // Framebuffer file descriptor
+	int kbfd; // Keyboard file descriptor
 
 	struct fb_fix_screeninfo finfo;  // Struct for fixed screen info
 	struct fb_var_screeninfo vinfo;  // For variable screen info
 	struct fb_var_screeninfo orig_vinfo; // To store original vinfo for reset
 
-	long len_fb = 0; // Length of framebuffer memory
-	char *fbp = 0; // Framebuffer pointer
+	long len_fb; // Length of framebuffer memory
+	char *fbp; // Framebuffer pointer
 
-	char* fbpage = 0; // Pointer to the page memory location, because
+	char* fbpage; // Pointer to the page memory location, because
 					  // The small screen can't load in any virtual space
-	int page = 0;  // Current page being written to (always 0 for sm screen)
+	int page;  // Current page being written to (always 0 for sm screen)
 
 public:
 	// Default Constructor
@@ -51,7 +52,8 @@ public:
 	void clear_screen(int);
 
 	void switch_page();
-	
+
+	int init(int*,int*,int*);
 };
 
 #endif
