@@ -8,9 +8,7 @@ SmallRpiScreen::SmallRpiScreen()
 
 SmallRpiScreen::SmallRpiScreen(int *w, int *h, int *bpp)
 {
-	if(init(w,h,bpp)){
-	  printf("EYO");
-	}
+	init(w,h,bpp);
 }
 
 SmallRpiScreen::~SmallRpiScreen()
@@ -48,8 +46,7 @@ void SmallRpiScreen::draw_pixel(int x, int y, int c)
 	debug("Drawing pixel", 3);
 
 	// Calculate pixel's offset inside the buffer
-	unsigned int pix_offset = (x * vinfo.bits_per_pixel / 8) + 
-		                       y * finfo.line_length;
+	unsigned int pix_offset = (x * vinfo.bits_per_pixel / 8)+ y * finfo.line_length;
 
 	//Do page calc (not in this implementation)
 
@@ -78,10 +75,6 @@ int SmallRpiScreen::init(int *w, int *h, int *bpp)
 {
 	FRAMEBUFFER = "/dev/fb1";
 	CONSOLE = "/dev/tty1";
-        PAGES = 1;
-
-        const char* FRAMEBUFFER;
-        const char* CONSOLE;
 
         PAGES = 1;
 
@@ -132,11 +125,11 @@ int SmallRpiScreen::init(int *w, int *h, int *bpp)
 	memcpy(&orig_vinfo, &vinfo, sizeof(struct fb_var_screeninfo));
 
 	//Change vinfo (not in this implementation... but we can try)
-	vinfo.xres = *w;
+	/*vinfo.xres = *w;
 	vinfo.yres = *h;
 	vinfo.bits_per_pixel = *bpp;
-	vinfo.xres_virtual = *w;
-	vinfo.yres_virtual = *h * PAGES;
+	vinfo.xres_virtual = *w;*/
+	vinfo.yres_virtual = vinfo.yres * 2;
 
 	// Set vinfo
 	if (ioctl(fbfd, FBIOPUT_VSCREENINFO, &vinfo)){
@@ -189,7 +182,11 @@ int main(int argc, char *argv[])
 {
   int w = 320, h = 240, bpp = 16;
   SmallRpiScreen sc(&w,&h,&bpp);
-  sc.clear_screen(0xF800);
-  sc.switch_page();
-  sleep(5);
+  printf("\n-------------------\nDisplay: %dx%d\n", w, h);
+  int c;
+  for(c = 0; c <= 0b11011110; c += 0b01001010){
+    sc.clear_screen(c);
+    sc.switch_page();
+    sleep(1);
+  }
 }
