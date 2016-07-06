@@ -59,7 +59,12 @@ void SmallRpiScreen::clear_screen(int c)
 {
 	debug("Clearing Screen", 2);
 
-	memset(fbpage + (page * len_fb), c, len_fb);
+	int i,j;
+	for(i = 0; i < vinfo.xres; i++){
+	  for(j = 0; j < vinfo.yres; j++){
+	    draw_pixel(i,j+(page * vinfo.yres),c);
+	  }
+	}
 }
 
 void SmallRpiScreen::switch_page()
@@ -129,7 +134,7 @@ int SmallRpiScreen::init(int *w, int *h, int *bpp)
 	vinfo.yres = *h;
 	vinfo.bits_per_pixel = *bpp;
 	vinfo.xres_virtual = *w;*/
-	vinfo.yres_virtual = vinfo.yres * 2;
+	//vinfo.yres_virtual = vinfo.yres * 2;
 
 	// Set vinfo
 	if (ioctl(fbfd, FBIOPUT_VSCREENINFO, &vinfo)){
@@ -182,11 +187,18 @@ int main(int argc, char *argv[])
 {
   int w = 320, h = 240, bpp = 16;
   SmallRpiScreen sc(&w,&h,&bpp);
-  printf("\n-------------------\nDisplay: %dx%d\n", w, h);
-  int c;
-  for(c = 0; c <= 0b11011110; c += 0b01001010){
-    sc.clear_screen(c);
-    sc.switch_page();
-    sleep(1);
+  printf("\n-------------------\nDisplay: %dx%d, %dbpp\n", w, h,bpp);
+  int s = 10;
+  int i,j;
+  for(i = 0; i < s; i++){
+    for(j = 0; j < s; j++){
+      sc.draw_pixel(i,j,0xF81F);
+    }
   }
+  sc.switch_page();
+  sleep(1);
+  sc.clear_screen(0xF000);
+  sc.draw_pixel(100,100,0x07E0);
+  sc.switch_page();
+  sleep(3);
 }

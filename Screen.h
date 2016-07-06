@@ -6,7 +6,7 @@ class Screen
 public:
 	// Default constructor
 	Screen() {}
-	
+
 	// Specified constructor
 	Screen(int*, int*, int*) {}
 
