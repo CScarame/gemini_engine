@@ -18,7 +18,7 @@ Timing::Timing(int set_tps)
 	num_ticks = 0;
 	num_frames = 0;
 
-	quit = 0;
+	q = 0; // Quit variable. If 0, keep going
 
 	get_time(&ct);
 	mt.tv_sec = ct.tv_sec;
@@ -91,7 +91,7 @@ void Timing::add_mark(long nano)
 	mt.tv_nsec = tmp % NANOS_PER_SEC;
 }
 
-long long Timing::mark(string opt = "nano")
+long long Timing::mark()
 {
 	debug("Getting time since mark",3);
 	struct timespec dt;
@@ -114,19 +114,25 @@ long long Timing::mark(string opt = "nano")
 
 	long long diff = dt.tv_sec * NANOS_PER_SEC + dt.tv_nsec;
 
-	switch (opt)
-	{
-	case "micro":
-		return diff / 1000;
-	case "milli":
-		return diff / 1000000;
-	default:
-		return diff;
-	}
+	return diff;
 }
 
 void Timing::quit(char reason = 1)
 {
 	debug("Timer told to quit");
 	q = reason;
+}
+
+void print(){
+  debug("Test",0);
+}
+
+void blah(){}
+
+int main(int argc, char* argv[])
+{
+  Timing t(1);
+
+
+  t.run(&print,&blah);
 }

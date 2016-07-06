@@ -33,7 +33,7 @@ public:
 	// Specified constructor. Param is fps
 	Timing(int);
 
-	~Timing() {}
+	~Timing();
 
 	int run(void(*update)(), void(*render)());
 
@@ -47,7 +47,7 @@ public:
 	void add_mark(long nano);
 	// Add nano nanoseconds to the mark's time
 
-	long long mark(string);
+	long long mark();
 	// opt gives the format of the return:
 	// nano: in nanoseconds
 	// micro: in microseconds
