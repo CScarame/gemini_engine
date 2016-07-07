@@ -5,7 +5,7 @@
 
 #include <stdio.h>   // For printf
 #include <stdlib.h>
-#include <unistd.h>
+#include <unistd.h>  // For sleep
 #include <termios.h> // For various keyboard input config
 #include <fcntl.h>  // For file protections
 #include <sys/ioctl.h>
@@ -14,17 +14,18 @@
 
 class RpiKeyboard
 {
-	int fd = 0; // The file descriptor for the text input
-	int oldkbmode = K_RAW;  // Used to hold the old keyboard mode, to reset
+	int fd; // The file descriptor for the text input
+	int oldkbmode;  // Used to hold the old keyboard mode, to reset
 	struct termios orig_kb; // Old termios keyboard data, to reset
 	struct termios new_kb;  // New termios keyboard data for use in this program
 
-	char active = 0;  // Is 1 after init has been called and before cleanup
+	char active;  // Is 1 after init has been called and before cleanup
 
-	int keys = 0;  // Variable that holds key status
+	int keys;  // Variable that holds key status
 
-	int remap = -1; // If this isn't -1, a key is being remapped
+	int remap; // If this isn't -1, a key is being remapped
 
+	unsigned char keycodes[12];
 	void update_keys(short, char);
 
 public:

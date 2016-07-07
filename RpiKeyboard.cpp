@@ -1,7 +1,7 @@
 
 #include "RpiKeyboard.h"
 
-void RpiKeyboard::update_keys(short, char)
+void RpiKeyboard::update_keys(short keycode, char down)
 {
 	if (remap == -1) {
 		int i;
@@ -30,12 +30,25 @@ RpiKeyboard::RpiKeyboard()
 
 	fd = 0;
 	oldkbmode = K_RAW;
-	
+
 	active = 0;
 
 	keys = 0;
 
 	remap = -1;
+
+	keycodes[0] =  17; // W
+	keycodes[1] =  30; // A
+	keycodes[2] =  31; // S
+	keycodes[3] =  32; // D
+	keycodes[4] =  57; // Space
+	keycodes[5] =  42; // LShift
+	keycodes[6] =  36; // J
+	keycodes[7] =  37; // K
+	keycodes[8] =  38; // L
+	keycodes[9] =  39; // :
+	keycodes[10] = 28; // Enter
+	keycodes[11] = 1;  // Esc
 
 	// Open and config the keyboard */
 	fd = open("/dev/tty", O_RDONLY | O_NDELAY);
@@ -63,7 +76,7 @@ RpiKeyboard::~RpiKeyboard()
 	ioctl(fd, KDSKBMODE, oldkbmode);
 
 	// Perform a sys call to restore defaults
-	system("sudo kbdrate -s");
+	system("sudo kbdrate -r 20.0 -d 500 -s");
 
 	tcsetattr(fd, 0, &orig_kb);
 	close(fd);
@@ -95,19 +108,31 @@ int RpiKeyboard::get_keys()
 	return keys;
 }
 
-char RpiKeyboard::check_key(keyflag_t)
+char RpiKeyboard::check_key(keyflag_t k)
 {
 	char result = (keys & (1 << k)) ? 1 : 0;
 }
 
-int RpiKeyboard::remap_key(keyflag_t)
+int RpiKeyboard::remap_key(keyflag_t k)
 {
 	remap = (int)k;
 	int temp = remap;
 
 	// The following is used to freeze everything while the key is being remapped
 	while (remap != -1) {
-		tick();
+		update();
 	}
 	return (int)keycodes[temp];
+}
+
+int main(int argc, char* argv[]){
+
+  RpiKeyboard key;
+
+  while(!key.check_key(k_esc)){
+    sleep(1);
+    key.update();
+    printf("%d\n",key.get_keys());
+  }
+
 }
