@@ -1,26 +1,41 @@
 // Header File for the timing default class
-#ifndef TIMING_H
-#define TIMING_H
+#ifndef RPI_TIMING_H
+#define RPI_TIMING_H
 
-#include "util.h"
+#include <time.h>
+#include <string.h>
 
-
-class Timing
+class RpiTiming
 {
+	void(*update)(void);
+	void(*render)(void);
+
+	int tps; // ticks per second
+
+	long period; // ns between each tick
+
+	struct timespec ct;
+	struct timespec mt;
+
+	unsigned long num_ticks;
+	unsigned long num_frames;
+
+	char q;
+
 public:
 	// Default constructor
-	Timing() {};
+	RpiTiming();
 
 	// Specified constructor. Param is fps
-	Timing(int) {};
+	RpiTiming(int) {};
 
-	~Timing() {};
+	~RpiTiming() {};
 
-	virtual int run(void(*update)(), void(*render)()) = 0;
+	int run(void(*update)(), void(*render)());
 	// Runs the timing calling update the number of tps per seconds
 
-	virtual void setTPS(int) = 0;
-	virtual int getTPS() = 0;
+	void setTPS(int);
+	int getTPS();
 	// Can set TPS mid game (probablyy bad?)
 
 	void get_time(struct timespec*);
@@ -35,7 +50,7 @@ public:
 	// Returns nanoseconds since mt
 
 
-	virtual void quit(char) = 0;
+	void quit(char);
 	// Set q to true, ending run
 };
 

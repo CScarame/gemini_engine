@@ -21,7 +21,7 @@ class SmallRpiScreen : Screen
 	const char* FRAMEBUFFER;
 	const char* CONSOLE;
 
-        int PAGES;
+  int PAGES;
 
 	int fbfd; // Framebuffer file descriptor
 	int kbfd; // Keyboard file descriptor

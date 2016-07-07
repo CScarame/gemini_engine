@@ -1,13 +1,15 @@
-// Default Timing class
+// Default RpiTiming class
 
-#include "Timing.h"
+#include "RpiTiming.h"
 
-Timing::Timing()
+const long NANOS_PER_SEC = 1000000000;
+
+RpiTiming::RpiTiming()
 {
-	Timing(60);
+	RpiTiming(60);
 }
 
-Timing::Timing(int set_tps)
+RpiTiming::RpiTiming(int set_tps)
 {
 	debug("Creating Timer");
 
@@ -26,12 +28,12 @@ Timing::Timing(int set_tps)
 
 }
 
-Timing::~Timing()
+RpiTiming::~RpiTiming()
 {
 	debug("Cleaning up Timer");
 }
 
-int Timing::run(void(*u)(), void(*r)())
+int RpiTiming::run(void(*u)(), void(*r)())
 {
 	debug("Running Timer");
 
@@ -59,31 +61,31 @@ int Timing::run(void(*u)(), void(*r)())
 	return q; // Return reason for quitting
 }
 
-void Timing::setTPS(int set_tps)
+void RpiTiming::setTPS(int set_tps)
 {
 	debug("Setting TPS");
 	tps = set_tps;
 }
 
-int Timing::getTPS()
+int RpiTiming::getTPS()
 {
 	return tps;
 }
 
-void Timing::get_time(struct timespec *t)
+void RpiTiming::get_time(struct timespec *t)
 {
 	debug("Getting current time",3);
 	clock_gettime(CLOCK_MONOTONIC, t);
 }
 
-void Timing::set_mark(struct timespec t)
+void RpiTiming::set_mark(struct timespec t)
 {
 	debug("Setting mark",3);
 	mt.tv_sec = t.tv_sec;
 	mt.tv_nsec = t.tv_nsec;
 }
 
-void Timing::add_mark(long nano)
+void RpiTiming::add_mark(long nano)
 {
 	debug("Increasing mark",3);
 	long tmp = mt.tv_nsec + nano;
@@ -91,7 +93,7 @@ void Timing::add_mark(long nano)
 	mt.tv_nsec = tmp % NANOS_PER_SEC;
 }
 
-long long Timing::mark()
+long long RpiTiming::mark()
 {
 	debug("Getting time since mark",3);
 	struct timespec dt;
@@ -117,7 +119,7 @@ long long Timing::mark()
 	return diff;
 }
 
-void Timing::quit(char reason = 1)
+void RpiTiming::quit(char reason = 1)
 {
 	debug("Timer told to quit");
 	q = reason;
@@ -131,7 +133,7 @@ void blah(){}
 
 int main(int argc, char* argv[])
 {
-  Timing t(1);
+  RpiTiming t(1);
 
 
   t.run(&print,&blah);
