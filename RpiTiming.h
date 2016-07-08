@@ -2,6 +2,8 @@
 #ifndef RPI_TIMING_H
 #define RPI_TIMING_H
 
+#include "Timing.h"
+
 #include <time.h>
 #include <string.h>
 
@@ -27,9 +29,9 @@ public:
 	RpiTiming();
 
 	// Specified constructor. Param is fps
-	RpiTiming(int) {};
+	RpiTiming(int);
 
-	~RpiTiming() {};
+	~RpiTiming();
 
 	int run(void(*update)(), void(*render)());
 	// Runs the timing calling update the number of tps per seconds
