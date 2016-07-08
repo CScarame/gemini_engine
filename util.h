@@ -5,7 +5,9 @@
 #include <stdlib.h>
 #include <string>
 
+#ifndef DEBUG
 #define DEBUG 2
+#endif
 
 using namespace std;
 

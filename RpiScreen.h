@@ -30,6 +30,8 @@ class RpiScreen : Screen
 	struct fb_var_screeninfo vinfo;  // For variable screen info
 	struct fb_var_screeninfo orig_vinfo; // To store original vinfo for reset
 
+        int orig_kbmode;
+
 	long len_fb; // Length of framebuffer memory
 	char *fbp; // Framebuffer pointer
 

@@ -1,6 +1,9 @@
+#define DEBUG 5
+
+
 #include "RpiScreen.h"
 
-SmallRpiScreen::RpiScreen()
+RpiScreen::RpiScreen()
 {
 	int w, h, bpp;
 	init(&w, &h, &bpp);
@@ -16,16 +19,7 @@ RpiScreen::~RpiScreen()
 	debug("Starting RpiScreen cleanup");
 
 	// Unmap framebuffer
-	munmap(fbp, len_fb);
-
-	// Restore orig screen
-	if (ioctl(fbfd, FBIOPUT_VSCREENINFO, &orig_vinfo))
-		debug("Error restoring orig screen info");
-
-	debug("Restored orig screen");
-
-	// Unmap pages (sm screen specific)
-	munmap(fbpage, PAGES*len_fb);
+	munmap(fbp, PAGES*len_fb);
 
 	// Restore cursor blink; close keyboard
 	if (kbfd >= 0) {
@@ -33,6 +27,12 @@ RpiScreen::~RpiScreen()
 		close(kbfd);
 		debug("Restored orig keyboard");
 	}
+
+	// Restore orig screen
+	if (ioctl(fbfd, FBIOPUT_VSCREENINFO, &orig_vinfo))
+		debug("Error restoring orig screen info");
+
+	debug("Restored orig screen");
 
 	// Close framebuffer
 	close(fbfd);
@@ -50,10 +50,10 @@ void RpiScreen::draw_pixel(int x, int y, int c)
 
 	//Do page calc
 
-	unsigned int page_offset = page * len_fb
+	unsigned int page_offset = page * len_fb;
 
-	// Similar to fbpage[pix_offset+page_offset] = c 
-	*((short*)(fbpage + pix_offset + page_offset)) = c;
+	// Similar to fbp[pix_offset+page_offset] = c 
+	*((short*)(fbp + pix_offset + page_offset)) = c;
 }
 
 void RpiScreen::draw_rect(int x, int y, int w, int h, int c)
@@ -96,7 +96,7 @@ void RpiScreen::switch_page()
 int RpiScreen::init(int *w, int *h, int *bpp)
 {
 	FRAMEBUFFER = "/dev/fb0";
-	CONSOLE = "/dev/tty0";
+	CONSOLE = "/dev/tty";
 
 	PAGES = 2;
 
@@ -120,26 +120,15 @@ int RpiScreen::init(int *w, int *h, int *bpp)
 
 	debug("Framebuffer device opened");
 
-	// Open console and hide cursor (Do this in keyboard???)
-	kbfd = open(CONSOLE, O_WRONLY);
-	if (kbfd >= 0) {
-		ioctl(kbfd, KDSETMODE, KD_GRAPHICS);
-	}
-	else {
-		debug("Could not open console to disable cursor.");
-		return -1;
-	}
-
-	debug("Diabled cursor blink.");
-
 	// Get orig variable screen info
 	if (ioctl(fbfd, FBIOGET_VSCREENINFO, &vinfo)) {
 		debug("Error reading orig vinfo");
 		return -1;
 	}
 
-	if (DEBUG >= 1) printf("Original info: %dx%d, %dbpp\n",
-		vinfo.xres, vinfo.yres, vinfo.bits_per_pixel);
+
+
+
 
 	// Store orig vinfo
 	memcpy(&orig_vinfo, &vinfo, sizeof(struct fb_var_screeninfo));
@@ -150,6 +139,9 @@ int RpiScreen::init(int *w, int *h, int *bpp)
 	vinfo.bits_per_pixel = *bpp;
 	vinfo.xres_virtual = vinfo.xres;
 	vinfo.yres_virtual = vinfo.yres * PAGES;
+
+	if (DEBUG >= 1) printf("Original info: %dx%d, %dbpp\n",
+		orig_vinfo.xres, orig_vinfo.yres, orig_vinfo.bits_per_pixel);
 
 	// Set vinfo
 	if (ioctl(fbfd, FBIOPUT_VSCREENINFO, &vinfo)) {
@@ -182,12 +174,24 @@ int RpiScreen::init(int *w, int *h, int *bpp)
 		return -1;
 	}
 
-	fbpage = (char*)malloc(len_fb*PAGES);
-
-	if ((int)fbpage == -1) {
-		debug("Failed to allocate pages");
+	// Open console and hide cursor (Do this in keyboard???)
+	kbfd = open(CONSOLE, O_RDWR);
+	if (kbfd >= 0) {
+		ioctl(kbfd, KDSETMODE, KD_GRAPHICS);
+	}
+	else {
+		debug("Could not open console to disable cursor.");
 		return -1;
 	}
+
+	debug("Diabled cursor blink.");
+
+	// (small only) fbp = (char*)malloc(len_fb*PAGES);
+
+//	if ((int)fbpage == -1) {
+//		debug("Failed to allocate pages");
+//		return -1;
+//	}
 
 	*w = vinfo.xres;
 	*h = vinfo.yres;
@@ -202,13 +206,15 @@ int main(int argc, char *argv[])
 {
   int w = 320, h = 240, bpp = 16;
   RpiScreen sc(&w,&h,&bpp);
-  
+  sleep(1);
   // Display a test of colors:
 	sc.clear_screen(0);
-	int i;
-	for (i = 0; i < (1 << 16), i++) {
-		int yy = i / 320;
-		int xx = i % 320;
+	sc.switch_page();
+	sc.clear_screen(0);
+	int i,xx,yy;
+	for (i = 0; i < (1 << 16); i++) {
+		yy = i / 320;
+		xx = i % 320;
 
 		sc.draw_pixel(xx, yy, i);
 	}
