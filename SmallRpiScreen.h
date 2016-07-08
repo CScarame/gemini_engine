@@ -49,7 +49,7 @@ public:
 
 	void draw_pixel(int, int, int);
 
-	void fill_rect(int,int,int,int,int);
+	void draw_rect(int,int,int,int,int);
 
 	void clear_screen(int);
 

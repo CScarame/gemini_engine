@@ -125,6 +125,7 @@ void RpiTiming::quit(char reason = 1)
 	q = reason;
 }
 
+/*
 void print(){
   debug("Test",0);
 }
@@ -138,3 +139,4 @@ int main(int argc, char* argv[])
 
   t.run(&print,&blah);
 }
+*/

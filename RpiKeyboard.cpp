@@ -124,7 +124,7 @@ int RpiKeyboard::remap_key(keyflag_t k)
 	}
 	return (int)keycodes[temp];
 }
-
+/*
 int main(int argc, char* argv[]){
 
   RpiKeyboard key;
@@ -136,3 +136,4 @@ int main(int argc, char* argv[]){
   }
 
 }
+*/
