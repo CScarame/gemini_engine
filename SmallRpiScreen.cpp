@@ -55,6 +55,19 @@ void SmallRpiScreen::draw_pixel(int x, int y, int c)
 	*((short*)(fbpage + pix_offset + (page * len_fb))) = c;
 }
 
+void SmallRpiScreen::draw_rect(int x,int y, int w, int h, int c)
+{
+
+	debug("Drawing rect",2);
+
+	int i,j;
+	for(j=0;j<h;j++){
+	  for(i=0;i<w;i++){
+	    draw_pixel(x+i,y+j,c);
+	  }
+	}
+}
+
 void SmallRpiScreen::clear_screen(int c)
 {
 	debug("Clearing Screen", 2);
