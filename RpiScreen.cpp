@@ -1,6 +1,3 @@
-#define DEBUG 5
-
-
 #include "RpiScreen.h"
 
 RpiScreen::RpiScreen()
@@ -28,8 +25,10 @@ RpiScreen::~RpiScreen()
 		debug("Restored orig keyboard");
 	}
 
+	memcpy(&vinfo, &orig_vinfo, sizeof(struct fb_var_screeninfo));
+
 	// Restore orig screen
-	if (ioctl(fbfd, FBIOPUT_VSCREENINFO, &orig_vinfo))
+	if (ioctl(fbfd, FBIOPUT_VSCREENINFO, &vinfo))
 		debug("Error restoring orig screen info");
 
 	debug("Restored orig screen");
