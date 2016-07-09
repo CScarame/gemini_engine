@@ -3,7 +3,7 @@ A gamemaking engine
 
 TODO:
 
-Generalize Timing and create RPiTiming as a subclass
+Debug General RPI screen
 
 Comment Screen and Keyboard classes
 
