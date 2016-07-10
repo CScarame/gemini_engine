@@ -35,7 +35,8 @@ class RpiScreen : Screen
 	long len_fb; // Length of framebuffer memory
 	char *fbp; // Framebuffer pointer
 
-	int page;  // Current page being written to (always 0 for sm screen)
+	int page;  // Current page being written to (always 0 for sm screen
+	long page_size;
 
 public:
 	// Default Constructor
@@ -46,6 +47,8 @@ public:
 
 	// Destructor
 	~RpiScreen();
+
+	void cleanup();
 
 	void draw_pixel(int, int, int);
 

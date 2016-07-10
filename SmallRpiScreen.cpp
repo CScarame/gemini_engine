@@ -116,6 +116,9 @@ int SmallRpiScreen::init(int *w, int *h, int *bpp)
 	  return (-1);
 	}
 
+	printf("%d <<< FBFD\n",(int)fbfd);
+
+
 	debug("Framebuffer device opened");
 
 	// Open console and hide cursor (Do this in keyboard???)
@@ -195,7 +198,7 @@ int SmallRpiScreen::init(int *w, int *h, int *bpp)
 
 	return 0;
 }
-/*
+
 int main(int argc, char *argv[])
 {
   int w = 320, h = 240, bpp = 16;
@@ -215,4 +218,4 @@ int main(int argc, char *argv[])
   sc.switch_page();
   sleep(3);
 }
-*/
+
