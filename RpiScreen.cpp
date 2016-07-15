@@ -228,3 +228,4 @@ int main(int argc, char *argv[])
 	sc.switch_page();
 	sleep(2);
 }
+
