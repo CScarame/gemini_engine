@@ -1,6 +1,7 @@
 // Default RpiTiming class
 
 #include "RpiTiming.h"
+#include <stdio.h>
 
 const long NANOS_PER_SEC = 1000000000;
 
@@ -49,6 +50,7 @@ int RpiTiming::run(void(*u)(), void(*r)())
 		while (mark() > period) {
 			update();
 			num_ticks++;
+			printf("%ld",mark());
 			add_mark(period);
 		}
 		render();
@@ -93,7 +95,7 @@ void RpiTiming::add_mark(long nano)
 	mt.tv_nsec = tmp % NANOS_PER_SEC;
 }
 
-long long RpiTiming::mark()
+long RpiTiming::mark()
 {
 	debug("Getting time since mark",3);
 	struct timespec dt;
@@ -114,7 +116,7 @@ long long RpiTiming::mark()
 		dt.tv_nsec += NANOS_PER_SEC;
 	}
 
-	long long diff = dt.tv_sec * NANOS_PER_SEC + dt.tv_nsec;
+	long diff = dt.tv_sec * NANOS_PER_SEC + dt.tv_nsec;
 
 	return diff;
 }
@@ -126,17 +128,22 @@ void RpiTiming::quit(char reason = 1)
 }
 
 /*
+
 void print(){
   debug("Test",0);
 }
 
-void blah(){}
+void blah()
+{
+  debug("Blah",0);
+}
 
 int main(int argc, char* argv[])
 {
-  RpiTiming t(1);
+  RpiTiming t(60);
 
 
   t.run(&print,&blah);
 }
+
 */

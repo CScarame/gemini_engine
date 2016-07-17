@@ -1,4 +1,4 @@
-#include "SmallRpiScreen.cpp"
+#include "RpiScreen.cpp"
 #include "RpiKeyboard.cpp"
 #include "RpiTiming.cpp"
 
@@ -21,7 +21,7 @@ int dy;
 int dx2;
 int dy2;
 
-SmallRpiScreen *scPtr;
+RpiScreen *scPtr;
 RpiKeyboard *kbPtr;
 RpiTiming *tmPtr;
 
@@ -108,8 +108,8 @@ int main(){
   dy = 0;
   dx2= 0;
   dy2= 0;
-  int w,h,bpp;
-  SmallRpiScreen sc(&w,&h,&bpp);
+  int w = 320, h = 240, bpp = 16;
+  RpiScreen sc(&w,&h,&bpp);
   scPtr = &sc;
   RpiKeyboard kb;
   kbPtr = &kb;

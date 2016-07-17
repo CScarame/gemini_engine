@@ -200,6 +200,7 @@ void RpiScreen::switch_page()
 	page = (page + 1) % PAGES;
 }
 
+/*
 int main(int argc, char *argv[])
 {
   int w = 320, h = 240, bpp = 16;
@@ -229,3 +230,4 @@ int main(int argc, char *argv[])
 	sleep(2);
 }
 
+*/

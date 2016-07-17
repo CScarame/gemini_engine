@@ -48,7 +48,7 @@ public:
 	void add_mark(long nano);
 	// Add nano nanoseconds to the mark's time
 
-	long long mark();
+	long mark();
 	// Returns nanoseconds since mt
 
 
