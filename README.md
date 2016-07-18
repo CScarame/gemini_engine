@@ -1,10 +1,15 @@
-# gemini_engine
-A gamemaking engine
+Gemini engine.
+
+So far, this is the outer engine - it has access to screen, keyboard and timing on the raspberry pi.
 
 TODO:
 
-Debug General RPI screen
+Unit tests for Screen, Keyboard, and Timing
 
-Comment Screen and Keyboard classes
+Loader/Saver for saving/loading game files
 
-Create Inner Engine
+Then, inner engines
+
+	Object? Room
+	Positioned
+	Visible, Colidable, etc.
