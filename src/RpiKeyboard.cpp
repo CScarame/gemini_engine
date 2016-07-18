@@ -1,29 +1,6 @@
 
 #include "RpiKeyboard.h"
 
-void RpiKeyboard::update_keys(short keycode, char down)
-{
-	if (remap == -1) {
-		int i;
-		for (i = 0; i<num_keys; i++) { // For each key, check if this is its keycode
-			if (keycode == keycodes[i]) {
-				if (down) {
-					keys |= (1 << i); // Mask the bit on
-				}
-				else {
-					keys &= ~(1 << i);// Mask the bit off
-				}
-			}
-		}
-	}
-
-	// ONLY FOR REMAPPING KEYS
-	else if (down) {
-		keycodes[remap] = keycode;
-		remap = -1;
-	}
-}
-
 RpiKeyboard::RpiKeyboard()
 {
 	debug("Initializing RpiKeyboard");
@@ -52,6 +29,7 @@ RpiKeyboard::RpiKeyboard()
 
 	// Open and config the keyboard */
 	fd = open("/dev/tty", O_RDONLY | O_NDELAY);
+	check(fd == 0, "Failed to open tty");
 	tcgetattr(fd, &orig_kb);
 	tcgetattr(fd, &new_kb);
 	new_kb.c_lflag &= ~(ECHO | ICANON | ISIG);
@@ -60,8 +38,8 @@ RpiKeyboard::RpiKeyboard()
 	tcsetattr(fd, TCSAFLUSH, &new_kb);
 
 	// Set med raw
-	ioctl(fd, KDGKBMODE, &oldkbmode);
-	ioctl(fd, KDSKBMODE, K_MEDIUMRAW);
+	check( ioctl(fd, KDGKBMODE, &oldkbmode) , "Failed to get oldkbmode");
+	check( ioctl(fd, KDSKBMODE, K_MEDIUMRAW), "Failed to set keyboard to med raw");
 
 	// Perform a sys call to prevent repeats
 	system("sudo kbdrate -r 2.0 -d 1000000 -s");
@@ -69,6 +47,21 @@ RpiKeyboard::RpiKeyboard()
 	debug("Successfully initialized keyboard");
 
 	active = 1; // Shows the keyboard is active
+
+error:
+	if(fd){
+		if(oldkbmode != K_RAW){
+			ioctl(fd, KDSKBMODE, oldkbmode);
+		}
+
+		tcsetattr(fd, 0, &orig_kb);
+		close(fd);
+	}
+	// Perform a sys call to restore defaults
+	system("sudo kbdrate -r 20.0 -d 500 -s");
+
+	debug("Cleaned up keyboard");
+	active = 0; // Shows the keyboard is inactive
 }
 
 RpiKeyboard::~RpiKeyboard()
@@ -89,10 +82,10 @@ void RpiKeyboard::update()
 {
 	if (!active) return;
 
-	debug("Update keyboard",3);
+	debug("Update keyboard");
 
-	char down; // Used to hold whether the key was moved to up or down
-	unsigned char keycode; // Used to hold the keycode of the presed key
+	int down; // Used to hold whether the key was moved to up or down
+	int keycode; // Used to hold the keycode of the presed key
 
 	unsigned char buf;  // Characters are read one at a time to this buffer.
 
@@ -108,12 +101,12 @@ int RpiKeyboard::get_keys()
 	return keys;
 }
 
-char RpiKeyboard::check_key(keyflag_t k)
+int RpiKeyboard::check_key(keyflag_t k)
 {
-	char result = (keys & (1 << k)) ? 1 : 0;
+	return keys & (1 << k);
 }
 
-int RpiKeyboard::remap_key(keyflag_t k)
+/*int RpiKeyboard::remap_key(keyflag_t k)
 {
 	remap = (int)k;
 	int temp = remap;
@@ -123,17 +116,19 @@ int RpiKeyboard::remap_key(keyflag_t k)
 		update();
 	}
 	return (int)keycodes[temp];
+}*/
+
+void RpiKeyboard::update_keys(int keycode, int down)
+{
+	int i;
+	for (i = 0; i<num_keys; i++) { // For each key, check if this is its keycode
+		if (keycode == keycodes[i]) {
+			if (down) {
+				keys |= (1 << i); // Mask the bit on
+			}
+			else {
+				keys &= ~(1 << i);// Mask the bit off
+			}
+		}
+	}
 }
-/*
-int main(int argc, char* argv[]){
-
-  RpiKeyboard key;
-
-  while(!key.check_key(k_esc)){
-    sleep(1);
-    key.update();
-    printf("%d\n",key.get_keys());
-  }
-
-}
-*/

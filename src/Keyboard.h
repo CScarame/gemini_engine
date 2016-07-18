@@ -1,7 +1,5 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
-//What?
-#include "util.h"
 
 // Enum for key inputs
 typedef enum
@@ -25,7 +23,7 @@ class Keyboard
 {
 public:
 	Keyboard() {};
-	
+
 	~Keyboard() {};
 
 	virtual void update() = 0;
@@ -34,7 +32,7 @@ public:
 	virtual int get_keys() = 0;
 	// Returns an int with bits for each key
 
-	virtual char check_key(keyflag_t) = 0;
+	virtual int check_key(keyflag_t) = 0;
 	// Returns boolean "if key is down"
 };
 
