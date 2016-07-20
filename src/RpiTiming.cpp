@@ -76,20 +76,20 @@ int RpiTiming::getTPS()
 
 void RpiTiming::get_time(struct timespec *t)
 {
-	debug("Getting current time",3);
+	debug("Getting current time");
 	clock_gettime(CLOCK_MONOTONIC, t);
 }
 
 void RpiTiming::set_mark(struct timespec t)
 {
-	debug("Setting mark",3);
+	debug("Setting mark");
 	mt.tv_sec = t.tv_sec;
 	mt.tv_nsec = t.tv_nsec;
 }
 
 void RpiTiming::add_mark(long nano)
 {
-	debug("Increasing mark",3);
+	debug("Increasing mark");
 	long tmp = mt.tv_nsec + nano;
 	mt.tv_sec += tmp / NANOS_PER_SEC;
 	mt.tv_nsec = tmp % NANOS_PER_SEC;
@@ -97,7 +97,7 @@ void RpiTiming::add_mark(long nano)
 
 long RpiTiming::mark()
 {
-	debug("Getting time since mark",3);
+	debug("Getting time since mark");
 	struct timespec dt;
 
 	get_time(&ct);

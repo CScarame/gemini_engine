@@ -1,3 +1,6 @@
+#ifndef _DBG_H
+#define _DBG_H
+
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
@@ -35,11 +38,12 @@
 
 #define check(A,M,...) if(!(A)) {log_err(M,##__VA_ARGS__);errno=0;goto error;}
 
+#define sentinel(M,...) log_err(M,##__VA_ARGS__); errno=0; goto error;
+
 #define check_mem(A) check((A), "Out of memory.")
 
-char LOGFILE[] = "log.txt";
-
-void set_stderr(char * logfile = LOGFILE,char * name)
+/*
+void set_stderr(char * logfile,char * name)
 {
   FILE *err;
 
@@ -58,9 +62,11 @@ void set_stderr(char * logfile = LOGFILE,char * name)
 
   strftime(buffer, 80, "%x|%X", lt);
 
-  fprintf(err,"\nLog from %s|%s\n", name, buffer);
+  fprintf(err,"\nLog from %s at %s\n", name, buffer);
 
   dup2(fileno(err),fileno(stderr));
   fclose(err);
 }
+*/
 
+#endif

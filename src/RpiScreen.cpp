@@ -88,7 +88,7 @@ RpiScreen::RpiScreen(int *w, int *h, int *bpp)
 	// Map framebuffer to user memory
 	len_fb = finfo.smem_len;
 
-	debug("\n%d <<< len_fb\n", len_fb);
+	debug("\n%ld <<< len_fb\n", len_fb);
 
 	fbp = (char*)mmap(0,
 		len_fb,
@@ -165,7 +165,7 @@ void RpiScreen::draw_rect(int x, int y, int w, int h, int c)
 
 void RpiScreen::clear_screen(int c)
 {
-	int i, j;
+	unsigned int i, j;
 	for (i = 0; i < vinfo.xres; i++) {
 		for (j = 0; j < vinfo.yres; j++) {
 			draw_pixel(i, j, c);

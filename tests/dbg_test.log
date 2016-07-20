@@ -1,0 +1,14 @@
+
+Log from ./dbg_test|07/20/16|01:48:28
+DEBUG: Testing debug
+[ERR]  (dbg_test.cpp:11: errno: None) Param not 0: 1
+[WARN] (dbg_test.cpp:19: errno: None) Second arg: None
+[INFO] (dbg_test.cpp:25) Testing info: SUCCESS
+[ERR]  (dbg_test.cpp:32: errno: None) Sentinel not 0
+
+Log from ./dbg_test at 07/20/16|01:50:09
+DEBUG: Testing debug
+[ERR]  (dbg_test.cpp:11: errno: None) Param not 0: 1
+[WARN] (dbg_test.cpp:19: errno: None) Second arg: None
+[INFO] (dbg_test.cpp:25) Testing info: SUCCESS
+[ERR]  (dbg_test.cpp:32: errno: None) Sentinel not 0
