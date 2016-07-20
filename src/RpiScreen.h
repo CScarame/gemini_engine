@@ -2,7 +2,6 @@
 #ifndef RPI_SCREEN_H
 #define RPI_SCREEN_H
 
-#include "util.h"
 #include "Screen.h"
 
 #include <stdio.h>

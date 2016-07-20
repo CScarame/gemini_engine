@@ -33,7 +33,7 @@ RpiScreen::RpiScreen(int *w, int *h, int *bpp)
 		return;
 	}
 
-	printf("%d <<< FBFD",(int)fbfd);
+	debug("%d <<< FBFD",(int)fbfd);
 
 	debug("Framebuffer device opened");
 
@@ -53,8 +53,7 @@ RpiScreen::RpiScreen(int *w, int *h, int *bpp)
 	vinfo.xres_virtual = vinfo.xres;
 	vinfo.yres_virtual = vinfo.yres * PAGES;
 
-	if (DEBUG >= 1) printf("Original info: %dx%d, %dbpp\n",
-		orig_vinfo.xres, orig_vinfo.yres, orig_vinfo.bits_per_pixel);
+	debug("Original info: %dx%d, %dbpp\n",orig_vinfo.xres, orig_vinfo.yres, orig_vinfo.bits_per_pixel);
 
 	// Set vinfo
 	if (ioctl(fbfd, FBIOPUT_VSCREENINFO, &vinfo)) {
@@ -62,13 +61,7 @@ RpiScreen::RpiScreen(int *w, int *h, int *bpp)
 		return;
 	}
 
-	if (DEBUG >= 1){
-		 printf("New info: %dx%d, %dbpp\n          %dx%d virtual\n",
-		vinfo.xres, vinfo.yres, vinfo.bits_per_pixel,
-		vinfo.xres_virtual, vinfo.yres_virtual);
-	}
-
-	printf("Test\n");
+	debug("New info: %dx%d, %dbpp\n %dx%d virtual\n", vinfo.xres, vinfo.yres, vinfo.bits_per_pixel, vinfo.xres_virtual, vinfo.yres_virtual);
 
 	// Open console and hide cursor (Do this in keyboard???)
 	kbfd = open(CONSOLE, O_WRONLY);
@@ -88,15 +81,14 @@ RpiScreen::RpiScreen(int *w, int *h, int *bpp)
 		return;
 	}
 
-	if (DEBUG >= 1) printf("Fixed info: %d smem_len, %d line_length\n",
-		finfo.smem_len, finfo.line_length);
+	debug("Fixed info: %d smem_len, %d line_length\n", finfo.smem_len, finfo.line_length);
 
 	page_size = finfo.line_length * vinfo.yres;
 
 	// Map framebuffer to user memory
 	len_fb = finfo.smem_len;
 
-	printf("\n%d <<< len_fb\n", len_fb);
+	debug("\n%d <<< len_fb\n", len_fb);
 
 	fbp = (char*)mmap(0,
 		len_fb,
@@ -104,7 +96,7 @@ RpiScreen::RpiScreen(int *w, int *h, int *bpp)
 		MAP_SHARED,
 		fbfd, 0);
 
-	printf("%d <<< ERRNO\n",errno);
+	debug("%d <<< ERRNO\n",errno);
 
 	if ((int)fbp == -1) {
 		debug("Failed to map a pointer to fb");
@@ -149,7 +141,6 @@ RpiScreen::~RpiScreen()
 
 void RpiScreen::draw_pixel(int x, int y, int c)
 {
-	debug("Drawing pixel", 3);
 
 	// Calculate pixel's offset inside the buffer
 	unsigned int pix_offset = (x * vinfo.bits_per_pixel / 8) + y * finfo.line_length;
@@ -164,9 +155,6 @@ void RpiScreen::draw_pixel(int x, int y, int c)
 
 void RpiScreen::draw_rect(int x, int y, int w, int h, int c)
 {
-
-	debug("Drawing rect", 2);
-
 	int i, j;
 	for (j = 0; j<h; j++) {
 		for (i = 0; i<w; i++) {
@@ -177,8 +165,6 @@ void RpiScreen::draw_rect(int x, int y, int w, int h, int c)
 
 void RpiScreen::clear_screen(int c)
 {
-	debug("Clearing Screen", 2);
-
 	int i, j;
 	for (i = 0; i < vinfo.xres; i++) {
 		for (j = 0; j < vinfo.yres; j++) {
@@ -189,8 +175,6 @@ void RpiScreen::clear_screen(int c)
 
 void RpiScreen::switch_page()
 {
-	debug("Switching page", 2);
-
 	// Change yoffset
 	vinfo.yoffset = page * vinfo.yres;
 	__u32 dummy = 0;

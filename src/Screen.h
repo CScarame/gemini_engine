@@ -1,6 +1,8 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
+#include "dbg.h"
+
 class Screen
 {
 public:

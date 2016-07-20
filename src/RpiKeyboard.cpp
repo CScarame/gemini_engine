@@ -12,7 +12,7 @@ RpiKeyboard::RpiKeyboard()
 
 	keys = 0;
 
-	remap = -1;
+//	remap = -1;
 
 	keycodes[0] =  17; // W
 	keycodes[1] =  30; // A
@@ -82,8 +82,6 @@ void RpiKeyboard::update()
 {
 	if (!active) return;
 
-	debug("Update keyboard");
-
 	int down; // Used to hold whether the key was moved to up or down
 	int keycode; // Used to hold the keycode of the presed key
 
@@ -103,7 +101,7 @@ int RpiKeyboard::get_keys()
 
 int RpiKeyboard::check_key(keyflag_t k)
 {
-	return keys & (1 << k);
+	return (keys & (1 << k));
 }
 
 /*int RpiKeyboard::remap_key(keyflag_t k)

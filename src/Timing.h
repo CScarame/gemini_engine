@@ -2,7 +2,7 @@
 #ifndef TIMING_H
 #define TIMING_H
 
-#include "util.h"
+#include "dbg.h"
 
 
 class Timing
